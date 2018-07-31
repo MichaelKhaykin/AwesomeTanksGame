@@ -102,18 +102,15 @@ namespace AwesomeTanksGame.Screens
             font = Content.Load<SpriteFont>("TextFont");
 
             var playTexture = Content.Load<Texture2D>("SetUpGameAssets/button_play");
-            string playButtonString = "playButton";
-            playButton = new Button(playTexture, new Vector2(screenWidth / 2, screenHeight / 2), Color.White, Main.SpriteScales[playButtonString].ToVector2(), null)
+            playButton = new Button(playTexture, new Vector2(screenWidth / 2, screenHeight / 2), Color.White, Main.SpriteScales[playTexture.Name].ToVector2(), null)
             {
                 Enabled = true
             };
 
             var soundTexture = Content.Load<Texture2D>("SetUpGameAssets/button_music");
             var soundOtherTexture = Content.Load<Texture2D>("SetUpGameAssets/button_music_off");
-
-            string soundButtonString = "soundButton";
-
-            soundButton = new SoundButton(soundTexture, new Vector2(screenWidth / 2 - (soundTexture.Width / 2) * 0.5f, screenHeight / 2 + soundTexture.Height / 2), Main.SpriteScales[soundButtonString].ToVector2(), soundOtherTexture)
+            
+            soundButton = new SoundButton(soundTexture, new Vector2(screenWidth / 2 - (soundTexture.Width / 2) * 0.5f, screenHeight / 2 + soundTexture.Height / 2), Main.SpriteScales[soundTexture.Name].ToVector2(), soundOtherTexture)
             {
                 IsVisible = true,
                 Enabled = true,
@@ -123,9 +120,7 @@ namespace AwesomeTanksGame.Screens
             var musicTexture = Content.Load<Texture2D>("SetUpGameAssets/button_sound");
             var musicOtherTexture = Content.Load<Texture2D>("SetUpGameAssets/button_sound_off");
 
-            string musicButtonString = "musicButton";
-
-            musicButton = new MusicButton(musicTexture, new Vector2(screenWidth / 2 - (soundTexture.Width / 2) * 0.5f, screenHeight / 2 + musicTexture.Height + (musicTexture.Height / 2) * 0.5f), Main.SpriteScales[musicButtonString].ToVector2(), musicOtherTexture)
+            musicButton = new MusicButton(musicTexture, new Vector2(screenWidth / 2 - (soundTexture.Width / 2) * 0.5f, screenHeight / 2 + musicTexture.Height + (musicTexture.Height / 2) * 0.5f), Main.SpriteScales[musicTexture.Name].ToVector2(), musicOtherTexture)
             {
                 IsVisible = true,
                 Enabled = true,

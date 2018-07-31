@@ -11,9 +11,9 @@ namespace AwesomeTanksGame
     {
         public List<Sprite> StarTextures { get; set; }
         public TextLabel Label { get; set; }
-        private string baseText;
+        public int Cost { get; set; } = 1;
 
-        public StatsButton(Texture2D texture, Vector2 position, Vector2 scale, TextLabel label, Sprite star, string baseText) 
+        public StatsButton(Texture2D texture, Vector2 position, Vector2 scale, TextLabel label, Sprite star) 
             : base(texture, position, Color.White, scale, null)
         {
             StarTextures = new List<Sprite>
@@ -21,7 +21,6 @@ namespace AwesomeTanksGame
                 star
             };
             Label = label;
-            this.baseText = baseText;
         }
          
         public void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
@@ -30,7 +29,8 @@ namespace AwesomeTanksGame
             {
                 var lastStar = StarTextures[StarTextures.Count - 1];
                 StarTextures.Add(new Sprite(lastStar.Texture, new Vector2(lastStar.Position.X + lastStar.ScaledWidth, lastStar.Position.Y), Color.White, lastStar.Scale));
-                Label.Text = $"{baseText} {StarTextures.Count}";
+                string[] array = Label.Text.Split(':');
+                Label.Text = $"{array[0]}:{StarTextures.Count}";
             }
             base.Update(gameTime, graphicsDevice);
         }
@@ -38,6 +38,8 @@ namespace AwesomeTanksGame
         public override void Draw(SpriteBatch spriteBatch)
         {
             Label.Draw(spriteBatch);
+            float y = Label.SpriteFont.MeasureString(Label.Text).Y;
+            spriteBatch.DrawString(Label.SpriteFont, $"${Cost.ToString()}", new Vector2(Label.Position.X, Label.Position.Y + y * 2), Color.White);
             for (int i = 0; i < StarTextures.Count; i++)
             {
                 StarTextures[i].Draw(spriteBatch);
@@ -49,7 +51,11 @@ namespace AwesomeTanksGame
     class StatsScreen : Screen
     {
         List<StatsButton> TankStats = new List<StatsButton>();
-        
+
+        Sprite Window;
+
+        TextLabel PerformenceLabel;
+
         MouseState oldMouse;
 
         public StatsScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
@@ -62,38 +68,53 @@ namespace AwesomeTanksGame
 
             var tankShieldTexture = Content.Load<Texture2D>("StatsScreenAssets/shield");
             var damageTexture = Content.Load<Texture2D>("StatsScreenAssets/damage");
+            var speedTexture = Content.Load<Texture2D>("StatsScreenAssets/speed");
+            var fogVisibilityTexture = Content.Load<Texture2D>("StatsScreenAssets/fogvisibility");
 
             Texture2D starTexture = Content.Load<Texture2D>("StatsScreenAssets/star");
             var starScale = Main.SpriteScales[starTexture.Name];
-
-
+            
             List<Sprite> stars = new List<Sprite>();
-            int x = screenWidth / 2 - 400;
+            int x = screenWidth / 2 - 300;
 
             for (int i = 0; i < 4; i++)
             {
                 //We are using tankShieldTexture, doesn't matter which texture we use we just need a height (all
                 //heights should be the same anyways....)
-                stars.Add(new Sprite(starTexture, new Vector2(x, (screenHeight / 2) + tankShieldTexture.Height), Color.White, starScale.ToVector2()));
+                stars.Add(new Sprite(starTexture, new Vector2(x - starTexture.Width * 1.5f, (screenHeight / 2) + tankShieldTexture.Height), Color.White, starScale.ToVector2()));
                 x += 200;
             }
 
-            var shieldLabel = new TextLabel(new Vector2(stars[0].Position.X, stars[0].Position.Y - stars[0].ScaledHeight + stars[0].ScaledHeight * 2), Color.Navy, $"Shield Level: 1", font)
+            var shieldLabel = new TextLabel(new Vector2(stars[0].Position.X, stars[0].Position.Y - stars[0].ScaledHeight + stars[0].ScaledHeight * 2), Color.Navy, $"Health:1", font)
             {
                 IsVisible = false
             };
-            var damageLabel = new TextLabel(new Vector2(stars[1].Position.X, stars[1].Position.Y - stars[1].ScaledHeight + stars[1].ScaledHeight * 2), Color.Navy, $"Turret Damage Level: 1", font)
+            var damageLabel = new TextLabel(new Vector2(stars[1].Position.X, stars[1].Position.Y - stars[1].ScaledHeight + stars[1].ScaledHeight * 2), Color.Navy, $"Damage:1", font)
             {
                 IsVisible = false
             };
-            //           var movementSpeedLabel = new TextLabel(new Vector2(), Color.White, $"Shield Level: 1", font);
-            //            var bulletSpeedLabel = new TextLabel(new Vector2(), Color.White, $"Shield Level: 1", font);
+            var movementLabel = new TextLabel(new Vector2(stars[2].Position.X, stars[2].Position.Y - stars[2].ScaledHeight + stars[2].ScaledHeight * 2), Color.Navy, $"Speed:1", font)
+            {
+                IsVisible = false
+            };
+            var fogVisibilityLabel = new TextLabel(new Vector2(stars[3].Position.X, stars[3].Position.Y - stars[3].ScaledHeight + stars[3].ScaledHeight * 2), Color.Navy, $"DeFogger:1", font)
+            {
+                IsVisible = false
+            };
 
-            TankStats.Add(new StatsButton(tankShieldTexture, new Vector2(screenWidth / 2 - 400, screenHeight / 2), Main.SpriteScales[tankShieldTexture.Name].ToVector2(), shieldLabel, stars[0], "Shield Level:"));
-            TankStats.Add(new StatsButton(damageTexture, new Vector2(screenWidth / 2 - 200, screenHeight / 2), Main.SpriteScales[damageTexture.Name].ToVector2(), damageLabel, stars[1], "Turret Damage Level:"));
+            TankStats.Add(new StatsButton(tankShieldTexture, new Vector2(screenWidth / 2 - 300, screenHeight / 2 - 100), Main.SpriteScales[tankShieldTexture.Name].ToVector2(), shieldLabel, stars[0]));
+            TankStats.Add(new StatsButton(damageTexture, new Vector2(screenWidth / 2 - 100, screenHeight / 2 - 100), Main.SpriteScales[damageTexture.Name].ToVector2(), damageLabel, stars[1]));
+            TankStats.Add(new StatsButton(speedTexture, new Vector2(screenWidth / 2 + 100, screenHeight / 2 - 100), Main.SpriteScales[speedTexture.Name].ToVector2(), movementLabel, stars[2]));
+            TankStats.Add(new StatsButton(fogVisibilityTexture, new Vector2(screenWidth / 2 + 300, screenHeight / 2 - 100), Main.SpriteScales[fogVisibilityTexture.Name].ToVector2(), fogVisibilityLabel, stars[3]));
+            
+            var windowTexture = Content.Load<Texture2D>("StatsScreenAssets/window");
+            Window = new Sprite(windowTexture, new Vector2(screenWidth / 2, screenHeight / 2), Color.White, Main.SpriteScales[windowTexture.Name].ToVector2());
 
-            //tankMovementSpeed = new StatsButton(tankShieldTexture, new Vector2(screenWidth / 2 - 400, screenHeight / 2), Main.SpriteScales[tankShieldTexture.Name].ToVector2(), shieldLabel, stars[0]);
-            //bulletSpeed = new StatsButton(tankShieldTexture, new Vector2(screenWidth / 2 - 400, screenHeight / 2), Main.SpriteScales[tankShieldTexture.Name].ToVector2(), shieldLabel, stars[0]);
+            float performenceLabelX = (TankStats[1].Position.X + TankStats[2].Position.X) / 2;
+            PerformenceLabel = new TextLabel(new Vector2(performenceLabelX - font.MeasureString("STATS:").X / 2, screenHeight / 2 - 200), Color.Black, "STATS:", font);
+
+            Sprites.Add(Window);
+            Sprites.Add(PerformenceLabel);
 
             for (int i = 0; i < TankStats.Count; i++)
             {
@@ -117,13 +138,13 @@ namespace AwesomeTanksGame
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            base.Draw(spriteBatch);
             //Changing font size without having to create a new spritefont
             for (int i = 0; i < TankStats.Count; i++)
             {
                 var label = TankStats[i].Label;
                 spriteBatch.DrawString(label.SpriteFont, label.Text, label.Position, label.Color, 0f, label.Origin, 1.5f, SpriteEffects.None, 0f);
             }
-            base.Draw(spriteBatch);
         }
     }
 }

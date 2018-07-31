@@ -59,12 +59,15 @@ namespace AwesomeTanksGame
 
         public void InitDict()
         {
-            SpriteScales.Add("soundButton", 0.5f);
-            SpriteScales.Add("playButton", 0.25f);
-            SpriteScales.Add("musicButton", 0.5f);
+            SpriteScales.Add("SetUpGameAssets/button_sound", 0.5f);
+            SpriteScales.Add("SetUpGameAssets/button_play", 0.25f);
+            SpriteScales.Add("SetUpGameAssets/button_music", 0.5f);
             SpriteScales.Add("StatsScreenAssets/star", 1f);
             SpriteScales.Add("StatsScreenAssets/damage", 0.5f);
+            SpriteScales.Add("StatsScreenAssets/speed", 0.5f);
             SpriteScales.Add("StatsScreenAssets/shield", 0.5f);
+            SpriteScales.Add("StatsScreenAssets/fogvisibility", 0.5f);
+            SpriteScales.Add("StatsScreenAssets/window", 1f);
         }
 
         protected override void Update(GameTime gameTime)
