@@ -9,6 +9,7 @@ namespace AwesomeTanksGame
     public enum States
     {
         SetUp,
+        StatsScreen,
         Main,
         Game,
         Level,
