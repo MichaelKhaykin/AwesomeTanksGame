@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Economics.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Main.cs" />

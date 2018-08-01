@@ -12,7 +12,7 @@ namespace AwesomeTanksGame
         StatsScreen,
         Main,
         Game,
-        Level,
+        LevelSelect,
         Pause,
         Done
     }

@@ -5,6 +5,8 @@ using MichaelLibrary;
 using System.Collections.Generic;
 using AwesomeTanksGame.Screens;
 using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Audio;
+using System.Diagnostics;
 
 namespace AwesomeTanksGame
 {
@@ -22,7 +24,14 @@ namespace AwesomeTanksGame
 
         Texture2D backGroundTexture;
 
+        SoundEffect buttonSoundClick;
+        public static List<Button> allButtons = new List<Button>();
+
         public static bool ShouldPlaySoundsDuringGame = true;
+
+        MouseState oldMouse;
+
+        TextLabel label;
 
         public Main()
         {
@@ -48,13 +57,58 @@ namespace AwesomeTanksGame
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             backGroundTexture = Content.Load<Texture2D>("SetUpGameAssets/bg");
-            
+
+            SetUpEconomy();
+
+            var spriteFont = Content.Load<SpriteFont>("TextFont");
+
+            string costText = $"Money:${Economics.Money}";
+            float y = spriteFont.MeasureString(costText).Y / 2;
+            float x = spriteFont.MeasureString(costText).X;
+            label = new TextLabel(new Vector2(x + GraphicsDevice.Viewport.Width - 350, y + 50), Color.Black, costText, spriteFont);
+
             InitDict();
 
             screens.Add(States.SetUp, new SetUpScreen(GraphicsDevice, Content));
             screens.Add(States.StatsScreen, new StatsScreen(GraphicsDevice, Content));
 
             // TODO: use this.Content to load your game content here
+        }
+
+        public void SetUpEconomy()
+        {
+            Economics.Money = 500;
+
+            int value = 1000;
+
+            int timesToLoop = 4;
+
+            for (int i = 0; i < timesToLoop; i++)
+            {
+                Economics.HealthCosts.Add(value);
+                value += 2000;
+            }
+
+            value = 5000;
+            for (int i = 0; i < timesToLoop; i++)
+            {
+                Economics.SpeedCosts.Add(value);
+                value += 2000;
+            }
+
+            value = 1000;
+            for (int i = 0; i < timesToLoop; i++)
+            {
+                Economics.DeFoggerCosts.Add(value);
+                value += 3000;
+            }
+
+            value = 3000;
+            for (int i = 0; i < timesToLoop; i++)
+            {
+                Economics.DamageCosts.Add(value);
+                value += 4000;
+            }
         }
 
         public void InitDict()
@@ -68,6 +122,8 @@ namespace AwesomeTanksGame
             SpriteScales.Add("StatsScreenAssets/shield", 0.5f);
             SpriteScales.Add("StatsScreenAssets/fogvisibility", 0.5f);
             SpriteScales.Add("StatsScreenAssets/window", 1f);
+            SpriteScales.Add("StatsScreenAssets/done", 1f);
+            SpriteScales.Add("StatsScreenAssets/undo", 1f);
         }
 
         protected override void Update(GameTime gameTime)
@@ -75,6 +131,24 @@ namespace AwesomeTanksGame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            MouseState mouse = Mouse.GetState();
+
+            label.Text = $"Money:${Economics.Money}";
+
+            if (ShouldPlaySoundsDuringGame)
+            {
+                for (int i = 0; i < allButtons.Count; i++)
+                {
+                    if (allButtons[i].IsClicked(mouse) && !allButtons[i].IsClicked(oldMouse))
+                    {
+                        var soundEffect = Content.Load<SoundEffect>("MusicAndSoundEffects/buttonClickSound").CreateInstance();
+                        soundEffect.IsLooped = false;
+                        soundEffect.Play();
+                    }
+                }
+            }
+
+            oldMouse = mouse;
             // TODO: Add your update logic here
             screens[CurrentState].Update(gameTime);
 
@@ -93,6 +167,7 @@ namespace AwesomeTanksGame
             if (CurrentState != States.Game)
             {
                 spriteBatch.Draw(backGroundTexture, new Vector2(0, 0), Color.White);
+                label.Draw(spriteBatch);
             }
             
             screens[CurrentState].Draw(spriteBatch);
