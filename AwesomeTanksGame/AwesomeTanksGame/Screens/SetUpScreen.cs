@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace AwesomeTanksGame.Screens
 {
-    class StatefulButton : Button
+    class StatefulButton : BaseButton
     {
         public override Texture2D Texture
         {
@@ -33,17 +33,19 @@ namespace AwesomeTanksGame.Screens
         public bool isOn { get; set; }
 
         public StatefulButton(Texture2D texture, Vector2 position, Vector2 scale, Texture2D otherTexture) 
-            : base(texture, position, Color.White, scale, null)
+            : base(texture, position, Color.White, scale)
         {
             this.otherTexture = otherTexture;
         }
 
-        public void Update(MouseState mouse, MouseState oldMouse)
+        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicDevice = null)
         {
             if (Enabled && IsClicked(mouse) && !IsClicked(oldMouse))
             {
                 isOn = !isOn;
             }
+
+            base.Update(mouse, oldMouse, gameTime, graphicDevice);
         }
     }
 
@@ -53,7 +55,7 @@ namespace AwesomeTanksGame.Screens
         {
         }
 
-        public override void Update(GameTime gameTime, GraphicsDevice graphicsDevice = null)
+        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
         {
             if (!isOn)
             {
@@ -63,7 +65,7 @@ namespace AwesomeTanksGame.Screens
             {
                 MediaPlayer.Resume();
             }
-            base.Update(gameTime, graphicsDevice);
+            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
         }
     }
 
@@ -132,11 +134,7 @@ namespace AwesomeTanksGame.Screens
             Sprites.Add(musicButton);
             Sprites.Add(playButton);
 
-            Main.allButtons.Add(playButton);
-            Main.allButtons.Add(soundButton);
-            Main.allButtons.Add(musicButton);
-
-            MediaPlayer.Play(music);
+           MediaPlayer.Play(music);
           
         }
 
@@ -144,15 +142,15 @@ namespace AwesomeTanksGame.Screens
         {
             MouseState mouse = Mouse.GetState();
 
-            soundButton.Update(mouse, oldMouse);
-            musicButton.Update(mouse, oldMouse);
+            soundButton.Update(mouse, oldMouse, gameTime);
+            musicButton.Update(mouse, oldMouse, gameTime);
 
 
             if (playButton.IsClicked(mouse))
             {
                 Main.CurrentState = States.StatsScreen;
                 Main.PreviousState = States.SetUp;
-            }
+             }
 
             oldMouse = mouse;
 

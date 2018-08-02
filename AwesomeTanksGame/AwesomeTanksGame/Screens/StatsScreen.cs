@@ -1,4 +1,5 @@
-﻿using MichaelLibrary;
+﻿using AwesomeTanksGame.Screens;
+using MichaelLibrary;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 
 namespace AwesomeTanksGame
 {
-    class StatsButton : Button
+    class StatsButton : BaseButton
     {
         public List<Sprite> StarTextures { get; set; }
         public TextLabel Label { get; set; }
@@ -15,7 +16,7 @@ namespace AwesomeTanksGame
         public string Name { get; set; }
         
         public StatsButton(Texture2D texture, Vector2 position, Vector2 scale, TextLabel label, Sprite star, string name) 
-            : base(texture, position, Color.White, scale, null)
+            : base(texture, position, Color.White, scale)
         {
             StarTextures = new List<Sprite>
             {
@@ -36,7 +37,12 @@ namespace AwesomeTanksGame
                 Label.Text = $"{array[0]}:{StarTextures.Count}";
                 Economics.Money -= Cost;
             }
-            base.Update(gameTime, graphicsDevice);
+            else if (StarTextures.Count >= 4)
+            {
+                Enabled = false;
+                Color = Color.Gray;
+            }
+            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -135,17 +141,12 @@ namespace AwesomeTanksGame
             Sprites.Add(doneButton);
             Sprites.Add(undoButton);
 
-            for (int i = 0; i < TankStats.Count; i++)
-            {
-                Sprites.Add(TankStats[i]);
-                Main.allButtons.Add(TankStats[i]);
-            }
+            Sprites.AddRange(TankStats);
         }
 
         public override void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
-            
 
             if (doneButton.IsClicked(mouse) && !doneButton.IsClicked(oldMouse))
             {
@@ -153,10 +154,6 @@ namespace AwesomeTanksGame
                 Main.PreviousState = States.StatsScreen;
             }
 
-            if (undoButton.IsClicked(mouse) && !undoButton.IsClicked(oldMouse))
-            {
-
-            }
             //if u want to do multiple undo's u need stack thingy
             if (undoButton.IsClicked(mouse) && !undoButton.IsClicked(oldMouse) && lastButtonClicked != null)
             {

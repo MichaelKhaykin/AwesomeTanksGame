@@ -15,7 +15,7 @@ namespace AwesomeTanksGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Dictionary<States, Screen> screens = new Dictionary<States, Screen>();
+        public Dictionary<States, Screen> screens = new Dictionary<States, Screen>();
 
         public static States CurrentState;
         public static States PreviousState;
@@ -24,11 +24,10 @@ namespace AwesomeTanksGame
 
         Texture2D backGroundTexture;
 
-        SoundEffect buttonSoundClick;
-        public static List<Button> allButtons = new List<Button>();
-
+        public static SoundEffectInstance buttonSoundClick;
+        
         public static bool ShouldPlaySoundsDuringGame = true;
-
+        
         MouseState oldMouse;
 
         TextLabel label;
@@ -58,6 +57,9 @@ namespace AwesomeTanksGame
 
             backGroundTexture = Content.Load<Texture2D>("SetUpGameAssets/bg");
 
+            buttonSoundClick = Content.Load<SoundEffect>("MusicAndSoundEffects/buttonClickSound").CreateInstance();
+            buttonSoundClick.IsLooped = false;
+
             SetUpEconomy();
 
             var spriteFont = Content.Load<SpriteFont>("TextFont");
@@ -70,6 +72,7 @@ namespace AwesomeTanksGame
             InitDict();
 
             screens.Add(States.SetUp, new SetUpScreen(GraphicsDevice, Content));
+            screens.Add(States.LevelSelect, new LevelSelectScreen(GraphicsDevice, Content));
             screens.Add(States.StatsScreen, new StatsScreen(GraphicsDevice, Content));
 
             // TODO: use this.Content to load your game content here
@@ -124,8 +127,66 @@ namespace AwesomeTanksGame
             SpriteScales.Add("StatsScreenAssets/window", 1f);
             SpriteScales.Add("StatsScreenAssets/done", 1f);
             SpriteScales.Add("StatsScreenAssets/undo", 1f);
+            SpriteScales.Add("LevelSelectScreen/header_levels", 1f);
+            SpriteScales.Add("LevelSelectScreen/button_empty", 0.3f);
+            for (int i = 0; i < 10; i++)
+            {
+                SpriteScales.Add($"LevelSelectScreen/{i}", 0.3f);
+            }
         }
 
+        public static Button CreateButton(GraphicsDevice graphicsDevice, Texture2D box, Texture2D image, Vector2 position, Color boxColor, Color imageColor)
+        {
+            Vector2 boxSize = new Vector2(box.Width, box.Height);
+            float boxScale = Main.SpriteScales[box.Name];
+            Vector2 scaledBoxSize = boxSize * boxScale;
+
+            Vector2 imageSize = new Vector2(image.Width, image.Height);
+            float imageScale = Main.SpriteScales[image.Name];
+            Vector2 scaledImageSize = imageSize * imageScale;
+
+            RenderTarget2D renderTarget = new RenderTarget2D(graphicsDevice, (int)scaledBoxSize.X, (int)scaledBoxSize.Y);
+            SpriteBatch spriteBatch = new SpriteBatch(graphicsDevice);
+
+            graphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(box, Vector2.Zero, null, boxColor, 0f, Vector2.Zero, boxScale, SpriteEffects.None, 0f);
+            spriteBatch.Draw(image, (scaledBoxSize - scaledImageSize) / 2f, null, imageColor, 0f, Vector2.Zero, imageScale, SpriteEffects.None, 0f);
+
+            spriteBatch.End();
+            graphicsDevice.SetRenderTarget(null);
+
+            float scale = 1f;
+            return new Button(renderTarget, position, Color.White, scale.ToVector2(), null);
+        }
+
+        public static Button CreateButton(GraphicsDevice graphicsDevice, Texture2D box, SpriteFont font, string text, Vector2 position)
+        {
+            Vector2 boxSize = new Vector2(box.Width, box.Height);
+            float boxScale = SpriteScales[box.Name];
+            Vector2 scaledBoxSize = boxSize * boxScale;
+
+            Vector2 textSize = font.MeasureString(text);
+
+            RenderTarget2D renderTarget = new RenderTarget2D(graphicsDevice, (int)scaledBoxSize.X, (int)scaledBoxSize.Y);
+            SpriteBatch spriteBatch = new SpriteBatch(graphicsDevice);
+
+            graphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.Clear(Color.Transparent);
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(box, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, boxScale, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(font, text, (scaledBoxSize - textSize) / 2, Color.White);
+
+            spriteBatch.End();
+            graphicsDevice.SetRenderTarget(null);
+
+            float scale = 1f;
+            return new Button(renderTarget, position, Color.White, scale.ToVector2(), null);
+        }
+        
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -135,23 +196,10 @@ namespace AwesomeTanksGame
 
             label.Text = $"Money:${Economics.Money}";
 
-            if (ShouldPlaySoundsDuringGame)
-            {
-                for (int i = 0; i < allButtons.Count; i++)
-                {
-                    if (allButtons[i].IsClicked(mouse) && !allButtons[i].IsClicked(oldMouse))
-                    {
-                        var soundEffect = Content.Load<SoundEffect>("MusicAndSoundEffects/buttonClickSound").CreateInstance();
-                        soundEffect.IsLooped = false;
-                        soundEffect.Play();
-                    }
-                }
-            }
-
             oldMouse = mouse;
             // TODO: Add your update logic here
             screens[CurrentState].Update(gameTime);
-
+            
             base.Update(gameTime);
         }
 
