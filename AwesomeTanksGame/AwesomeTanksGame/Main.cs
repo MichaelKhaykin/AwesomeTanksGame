@@ -135,7 +135,7 @@ namespace AwesomeTanksGame
             }
         }
 
-        public static Button CreateButton(GraphicsDevice graphicsDevice, Texture2D box, Texture2D image, Vector2 position, Color boxColor, Color imageColor)
+        public static BaseButton CreateButton(GraphicsDevice graphicsDevice, Texture2D box, Texture2D image, Vector2 position, Color boxColor, Color imageColor)
         {
             Vector2 boxSize = new Vector2(box.Width, box.Height);
             float boxScale = Main.SpriteScales[box.Name];
@@ -159,7 +159,7 @@ namespace AwesomeTanksGame
             graphicsDevice.SetRenderTarget(null);
 
             float scale = 1f;
-            return new Button(renderTarget, position, Color.White, scale.ToVector2(), null);
+            return new BaseButton(renderTarget, position, Color.White, scale.ToVector2());
         }
 
         public static Button CreateButton(GraphicsDevice graphicsDevice, Texture2D box, SpriteFont font, string text, Vector2 position)

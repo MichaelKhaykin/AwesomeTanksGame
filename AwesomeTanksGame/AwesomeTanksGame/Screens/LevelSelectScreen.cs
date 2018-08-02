@@ -12,11 +12,11 @@ namespace AwesomeTanksGame.Screens
 {
     public class LevelSelectScreen : Screen
     {
-        List<Button> LevelButtons;
+        List<BaseButton> LevelButtons;
         List<Texture2D> NumberTextures;
         Sprite LevelsHeader;
 
-//        Sprite Window;
+        //        Sprite Window;
 
         public LevelSelectScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
@@ -25,7 +25,7 @@ namespace AwesomeTanksGame.Screens
 
             int count = 10;
 
-            LevelButtons = new List<Button>();
+            LevelButtons = new List<BaseButton>();
             NumberTextures = new List<Texture2D>();
 
             var buttonTexture = Content.Load<Texture2D>("LevelSelectScreen/button_empty");
@@ -50,7 +50,7 @@ namespace AwesomeTanksGame.Screens
                     x += buttonTexture.Width * scale;
                 }
 
-                
+
                 //gray out all buttons except the first one
                 var imageColor = i == 0 ? Color.White : Color.Gray;
 
@@ -59,17 +59,17 @@ namespace AwesomeTanksGame.Screens
                 button.Enabled = i == 0;
 
                 LevelButtons.Add(button);
-             }
+            }
 
             var texture = Content.Load<Texture2D>("LevelSelectScreen/header_levels");
             LevelsHeader = new Sprite(texture, new Vector2(screenWidth / 2, texture.Height), Color.White, Main.SpriteScales[texture.Name].ToVector2());
 
-//            var windowTexture = Content.Load<Texture2D>("StatsScreenAssets/window");
-//            Window = new Sprite(windowTexture, new Vector2(screenWidth / 2, screenHeight / 2 + windowTexture.Height / 8), Color.Gray, Main.SpriteScales[windowTexture.Name].ToVector2() / 2);
+            //            var windowTexture = Content.Load<Texture2D>("StatsScreenAssets/window");
+            //            Window = new Sprite(windowTexture, new Vector2(screenWidth / 2, screenHeight / 2 + windowTexture.Height / 8), Color.Gray, Main.SpriteScales[windowTexture.Name].ToVector2() / 2);
 
             Sprites.Add(LevelsHeader);
             Sprites.AddRange(LevelButtons);
-  //          Sprites.Add(Window);
+            //          Sprites.Add(Window);
         }
     }
 }

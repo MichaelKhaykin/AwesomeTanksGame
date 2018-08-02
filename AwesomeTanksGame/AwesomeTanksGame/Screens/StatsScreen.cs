@@ -68,8 +68,8 @@ namespace AwesomeTanksGame
 
         MouseState oldMouse;
 
-        Button doneButton;
-        Button undoButton;
+        BaseButton doneButton;
+        BaseButton undoButton;
         
         StatsButton lastButtonClicked;
 
@@ -83,10 +83,10 @@ namespace AwesomeTanksGame
             var screenHeight = graphics.Viewport.Height;
 
             var doneTexture = Content.Load<Texture2D>("StatsScreenAssets/done");
-            doneButton = new Button(doneTexture, new Vector2(screenWidth - doneTexture.Width, screenHeight - doneTexture.Height), Color.White, Main.SpriteScales[doneTexture.Name].ToVector2(), null);
+            doneButton = new BaseButton(doneTexture, new Vector2(screenWidth - doneTexture.Width, screenHeight - doneTexture.Height), Color.White, Main.SpriteScales[doneTexture.Name].ToVector2());
             
             var undoTexture = Content.Load<Texture2D>("StatsScreenAssets/undo");
-            undoButton = new Button(undoTexture, new Vector2(undoTexture.Width, screenHeight - doneTexture.Height), Color.White, Main.SpriteScales[undoTexture.Name].ToVector2(), null);
+            undoButton = new BaseButton(undoTexture, new Vector2(undoTexture.Width, screenHeight - doneTexture.Height), Color.White, Main.SpriteScales[undoTexture.Name].ToVector2());
 
             var tankShieldTexture = Content.Load<Texture2D>("StatsScreenAssets/shield");
             var damageTexture = Content.Load<Texture2D>("StatsScreenAssets/damage");
@@ -137,16 +137,15 @@ namespace AwesomeTanksGame
 
             Sprites.Add(Window);
             Sprites.Add(PerformenceLabel);
-
-            Sprites.Add(doneButton);
-            Sprites.Add(undoButton);
-
-            Sprites.AddRange(TankStats);
+            
         }
 
         public override void Update(GameTime gameTime)
         {
             MouseState mouse = Mouse.GetState();
+
+            doneButton.Update(mouse, oldMouse, gameTime);
+            undoButton.Update(mouse, oldMouse, gameTime);
 
             if (doneButton.IsClicked(mouse) && !doneButton.IsClicked(oldMouse))
             {
@@ -197,9 +196,13 @@ namespace AwesomeTanksGame
             //Changing font size without having to create a new spritefont
             for (int i = 0; i < TankStats.Count; i++)
             {
+                TankStats[i].Draw(spriteBatch);
                 var label = TankStats[i].Label;
                 spriteBatch.DrawString(label.SpriteFont, label.Text, label.Position, label.Color, 0f, label.Origin, 1.5f, SpriteEffects.None, 0f);
             }
+
+            doneButton.Draw(spriteBatch);
+            undoButton.Draw(spriteBatch);
         }
     }
 }

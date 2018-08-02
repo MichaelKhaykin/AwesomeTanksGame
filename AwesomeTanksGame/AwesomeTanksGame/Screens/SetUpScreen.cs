@@ -75,10 +75,10 @@ namespace AwesomeTanksGame.Screens
         {
         }
 
-        public override void Update(GameTime gameTime, GraphicsDevice graphicsDevice = null)
+        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
         {
             Main.ShouldPlaySoundsDuringGame = isOn;
-            base.Update(gameTime, graphicsDevice);
+            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
         }
     }
 
@@ -89,7 +89,7 @@ namespace AwesomeTanksGame.Screens
         StatefulButton soundButton;
         StatefulButton musicButton;
         
-        Button playButton;
+        BaseButton playButton;
 
         MouseState oldMouse;
 
@@ -105,7 +105,7 @@ namespace AwesomeTanksGame.Screens
             font = Content.Load<SpriteFont>("TextFont");
 
             var playTexture = Content.Load<Texture2D>("SetUpGameAssets/button_play");
-            playButton = new Button(playTexture, new Vector2(screenWidth / 2, screenHeight / 2), Color.White, Main.SpriteScales[playTexture.Name].ToVector2(), null)
+            playButton = new BaseButton(playTexture, new Vector2(screenWidth / 2, screenHeight / 2), Color.White, Main.SpriteScales[playTexture.Name].ToVector2())
             {
                 Enabled = true
             };
@@ -130,12 +130,7 @@ namespace AwesomeTanksGame.Screens
                 isOn = true
             };
         
-            Sprites.Add(soundButton);
-            Sprites.Add(musicButton);
-            Sprites.Add(playButton);
-
            MediaPlayer.Play(music);
-          
         }
 
         public override void Update(GameTime gameTime)
@@ -145,6 +140,7 @@ namespace AwesomeTanksGame.Screens
             soundButton.Update(mouse, oldMouse, gameTime);
             musicButton.Update(mouse, oldMouse, gameTime);
 
+            playButton.Update(mouse, oldMouse, gameTime);
 
             if (playButton.IsClicked(mouse))
             {
@@ -161,6 +157,7 @@ namespace AwesomeTanksGame.Screens
         {
             soundButton.Draw(spriteBatch);
             musicButton.Draw(spriteBatch);
+            playButton.Draw(spriteBatch);
             base.Draw(spriteBatch);
         }
     }
