@@ -26,9 +26,9 @@ namespace AwesomeTanksGame
             Name = name;
         }
          
-        public void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, ref StatsButton lastButtonClicked, GraphicsDevice graphicsDevice = null)
+        public void Update(GameTime gameTime, ref StatsButton lastButtonClicked, GraphicsDevice graphicsDevice = null)
         {
-            if (Enabled && IsClicked(mouse) && !IsClicked(oldMouse) && StarTextures.Count < 4 && Economics.Money - Cost >= 0)
+            if (Enabled && IsClicked(Main.MouseState) && !IsClicked(Main.oldMouseState) && StarTextures.Count < 4 && Economics.Money - Cost >= 0)
             {
                 lastButtonClicked = this;
                 var lastStar = StarTextures[StarTextures.Count - 1];
@@ -42,7 +42,7 @@ namespace AwesomeTanksGame
                 Enabled = false;
                 Color = Color.Gray;
             }
-            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
+            base.Update(gameTime, graphicsDevice);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -65,9 +65,7 @@ namespace AwesomeTanksGame
         Sprite Window;
 
         TextLabel PerformenceLabel;
-
-        MouseState oldMouse;
-
+        
         BaseButton doneButton;
         BaseButton undoButton;
         
@@ -142,19 +140,17 @@ namespace AwesomeTanksGame
 
         public override void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
+            doneButton.Update(gameTime);
+            undoButton.Update(gameTime);
 
-            doneButton.Update(mouse, oldMouse, gameTime);
-            undoButton.Update(mouse, oldMouse, gameTime);
-
-            if (doneButton.IsClicked(mouse) && !doneButton.IsClicked(oldMouse))
+            if (doneButton.IsClicked(Main.MouseState) && !doneButton.IsClicked(Main.oldMouseState))
             {
                 Main.CurrentState = States.LevelSelect;
                 Main.PreviousState = States.StatsScreen;
             }
 
             //if u want to do multiple undo's u need stack thingy
-            if (undoButton.IsClicked(mouse) && !undoButton.IsClicked(oldMouse) && lastButtonClicked != null)
+            if (undoButton.IsClicked(Main.MouseState) && !undoButton.IsClicked(Main.oldMouseState) && lastButtonClicked != null)
             {
                 var list = Economics.GetListByName(lastButtonClicked.Name);
                 lastButtonClicked.Cost = list[lastButtonClicked.StarTextures.Count - 2];
@@ -183,10 +179,8 @@ namespace AwesomeTanksGame
                         TankStats[i].Cost = Economics.DeFoggerCosts[TankStats[i].StarTextures.Count - 1];
                         break;
                 }
-                TankStats[i].Update(mouse, oldMouse, gameTime, ref lastButtonClicked);
+                TankStats[i].Update(gameTime, ref lastButtonClicked);
             }
-            oldMouse = mouse;
-
             base.Update(gameTime);
         }
 

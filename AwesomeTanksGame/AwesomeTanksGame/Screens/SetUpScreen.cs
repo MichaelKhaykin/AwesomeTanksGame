@@ -38,14 +38,14 @@ namespace AwesomeTanksGame.Screens
             this.otherTexture = otherTexture;
         }
 
-        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicDevice = null)
+        public override void Update(GameTime gameTime, GraphicsDevice graphicDevice = null)
         {
-            if (Enabled && IsClicked(mouse) && !IsClicked(oldMouse))
+            if (Enabled && IsClicked(Main.MouseState) && !IsClicked(Main.oldMouseState))
             {
                 isOn = !isOn;
             }
 
-            base.Update(mouse, oldMouse, gameTime, graphicDevice);
+            base.Update(gameTime, graphicDevice);
         }
     }
 
@@ -55,7 +55,7 @@ namespace AwesomeTanksGame.Screens
         {
         }
 
-        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
+        public override void Update(GameTime gameTime, GraphicsDevice graphicsDevice = null)
         {
             if (!isOn)
             {
@@ -65,7 +65,7 @@ namespace AwesomeTanksGame.Screens
             {
                 MediaPlayer.Resume();
             }
-            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
+            base.Update(gameTime, graphicsDevice);
         }
     }
 
@@ -75,10 +75,10 @@ namespace AwesomeTanksGame.Screens
         {
         }
 
-        public override void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
+        public override void Update(GameTime gameTime, GraphicsDevice graphicsDevice = null)
         {
             Main.ShouldPlaySoundsDuringGame = isOn;
-            base.Update(mouse, oldMouse, gameTime, graphicsDevice);
+            base.Update(gameTime, graphicsDevice);
         }
     }
 
@@ -86,15 +86,13 @@ namespace AwesomeTanksGame.Screens
     {
         SpriteFont font;
 
-        StatefulButton soundButton;
-        StatefulButton musicButton;
+        SoundButton soundButton;
+        MusicButton musicButton;
         
         BaseButton playButton;
-
-        MouseState oldMouse;
-
+        
         Song music;
-
+        
         public SetUpScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
             music = Content.Load<Song>("MusicAndSoundEffects/Spirit of the Girl");
@@ -129,27 +127,23 @@ namespace AwesomeTanksGame.Screens
                 Enabled = true,
                 isOn = true
             };
-        
+            
            MediaPlayer.Play(music);
         }
 
         public override void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
+            soundButton.Update(gameTime);
+            musicButton.Update(gameTime);
 
-            soundButton.Update(mouse, oldMouse, gameTime);
-            musicButton.Update(mouse, oldMouse, gameTime);
-
-            playButton.Update(mouse, oldMouse, gameTime);
-
-            if (playButton.IsClicked(mouse))
+            playButton.Update(gameTime);
+            
+            if (playButton.IsClicked(Main.MouseState))
             {
                 Main.CurrentState = States.StatsScreen;
                 Main.PreviousState = States.SetUp;
              }
-
-            oldMouse = mouse;
-
+            
             base.Update(gameTime);
         }
 

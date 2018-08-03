@@ -4,9 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MichaelLibrary;
 using System.Collections.Generic;
 using AwesomeTanksGame.Screens;
-using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Audio;
-using System.Diagnostics;
 
 namespace AwesomeTanksGame
 {
@@ -16,6 +14,9 @@ namespace AwesomeTanksGame
         SpriteBatch spriteBatch;
 
         public Dictionary<States, Screen> screens = new Dictionary<States, Screen>();
+
+        public static MouseState MouseState;
+        public static MouseState oldMouseState;
 
         public static States CurrentState;
         public static States PreviousState;
@@ -27,9 +28,9 @@ namespace AwesomeTanksGame
         public static SoundEffectInstance buttonSoundClick;
         
         public static bool ShouldPlaySoundsDuringGame = true;
-        
-        MouseState oldMouse;
 
+        public static int LevelSelected = 0;
+        
         TextLabel label;
 
         public Main()
@@ -72,8 +73,9 @@ namespace AwesomeTanksGame
             InitDict();
 
             screens.Add(States.SetUp, new SetUpScreen(GraphicsDevice, Content));
-            screens.Add(States.LevelSelect, new LevelSelectScreen(GraphicsDevice, Content));
             screens.Add(States.StatsScreen, new StatsScreen(GraphicsDevice, Content));
+            screens.Add(States.LevelSelect, new LevelSelectScreen(GraphicsDevice, Content));
+            screens.Add(States.Game, new GameScreen(GraphicsDevice, Content));
 
             // TODO: use this.Content to load your game content here
         }
@@ -191,15 +193,16 @@ namespace AwesomeTanksGame
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            MouseState mouse = Mouse.GetState();
-
+            
             label.Text = $"Money:${Economics.Money}";
 
-            oldMouse = mouse;
+            MouseState = Mouse.GetState();
+
             // TODO: Add your update logic here
             screens[CurrentState].Update(gameTime);
-            
+
+            oldMouseState = MouseState;
+
             base.Update(gameTime);
         }
 

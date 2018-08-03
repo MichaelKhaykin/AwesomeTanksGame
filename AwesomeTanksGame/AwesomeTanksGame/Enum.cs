@@ -10,9 +10,9 @@ namespace AwesomeTanksGame
     {
         SetUp,
         StatsScreen,
-        Main,
-        Game,
         LevelSelect,
+        Tutorial,
+        Game,
         Pause,
         Done
     }

@@ -18,10 +18,9 @@ namespace AwesomeTanksGame
         {
 
         }
-
-        public virtual void Update(MouseState mouse, MouseState oldMouse, GameTime gameTime, GraphicsDevice graphicsDevice = null)
+        public override void Update(GameTime gameTime, GraphicsDevice graphicsDevice = null)
         {
-            if (IsClicked(mouse) && !IsClicked(oldMouse) && Main.ShouldPlaySoundsDuringGame)
+            if (IsClicked(Main.MouseState) && !IsClicked(Main.oldMouseState) && Main.ShouldPlaySoundsDuringGame)
             {
                 Main.buttonSoundClick.Play();
             }

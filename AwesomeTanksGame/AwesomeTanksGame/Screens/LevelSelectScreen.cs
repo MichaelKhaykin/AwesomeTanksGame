@@ -7,6 +7,7 @@ using MichaelLibrary;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace AwesomeTanksGame.Screens
 {
@@ -15,9 +16,7 @@ namespace AwesomeTanksGame.Screens
         List<BaseButton> LevelButtons;
         List<Texture2D> NumberTextures;
         Sprite LevelsHeader;
-
-        //        Sprite Window;
-
+        
         public LevelSelectScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
             int screenWidth = graphics.Viewport.Width;
@@ -63,13 +62,34 @@ namespace AwesomeTanksGame.Screens
 
             var texture = Content.Load<Texture2D>("LevelSelectScreen/header_levels");
             LevelsHeader = new Sprite(texture, new Vector2(screenWidth / 2, texture.Height), Color.White, Main.SpriteScales[texture.Name].ToVector2());
-
-            //            var windowTexture = Content.Load<Texture2D>("StatsScreenAssets/window");
-            //            Window = new Sprite(windowTexture, new Vector2(screenWidth / 2, screenHeight / 2 + windowTexture.Height / 8), Color.Gray, Main.SpriteScales[windowTexture.Name].ToVector2() / 2);
-
+            
             Sprites.Add(LevelsHeader);
-            Sprites.AddRange(LevelButtons);
-            //          Sprites.Add(Window);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            for (int i = 0; i < LevelButtons.Count; i++)
+            {
+                LevelButtons[i].Update(gameTime);
+                //Tutorial case
+                if (LevelButtons[i].IsClicked(Main.MouseState) && LevelButtons[i].IsClicked(Main.oldMouseState) && LevelButtons[i].Enabled)
+                {
+                    Main.CurrentState = States.Game;
+                    Main.PreviousState = States.LevelSelect;
+                    Main.LevelSelected = i;
+                }
+            }
+            
+            base.Update(gameTime);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            for (int i = 0; i < LevelButtons.Count; i++)
+            {
+                LevelButtons[i].Draw(spriteBatch);
+            }
+            base.Draw(spriteBatch);
         }
     }
 }
