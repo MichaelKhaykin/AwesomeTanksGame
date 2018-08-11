@@ -59,7 +59,7 @@ namespace AwesomeTanksGame
             : base(texture, position, color, scale, null)
         {
             Bullets = new List<Bullet>();
-            bulletTexture = Content.Load<Texture2D>("Bullet");
+            bulletTexture = Content.Load<Texture2D>("GameScreen/Bullet");
 
             this.speed = speed;
 

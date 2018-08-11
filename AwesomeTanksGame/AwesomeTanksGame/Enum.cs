@@ -16,4 +16,10 @@ namespace AwesomeTanksGame
         Pause,
         Done
     }
+
+    public enum FogState
+    {
+        Visible,
+        Invisible
+    }
 }
